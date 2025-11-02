@@ -1,4 +1,10 @@
-.vscode/*.db*
-obj
-bin/Acuarium*
+# Ignore Visual Studio Code settings
+.vscode/
+*.db
+
+# Build folders
+bin/
+obj/
+
+# macOS system files
 .DS_Store
