@@ -3,7 +3,7 @@
 *.db
 
 # Build folders
-bin/
+# bin/
 obj/
 
 # macOS system files
