@@ -70,8 +70,9 @@ public:
     void reduceDamageDebounce();
     
    
-    void applySpeedBoost() { m_speedBoostTimer = 300; } 
     bool hasSpeedBoost() const { return m_speedBoostTimer > 0; }
+    void applySpeedBoost(int frames = 180) { m_speedBoostTimer = frames; } // ~3 s
+
     
 private:
     int m_score = 0;
@@ -133,11 +134,18 @@ public:
     int getHeight() const { return m_height; }
 
     //  Nuevos setters para conectar sonido y puntuación
+    void setPowerUpSound(ofSoundPlayer* s) { powerUpSound = s; }
     void setBiteSound(ofSoundPlayer* s) { biteSound = s; }
     void setScorePtr(int* p) { scorePtr = p; }
+    void playBiteSound() {
+        if (biteSound) {
+            biteSound->play();
+        }
+
+    }
 
     
-    int m_powerUpTimer = 0;
+   
 
 
 private:
@@ -151,7 +159,10 @@ private:
     std::shared_ptr<AquariumSpriteManager> m_sprite_manager;
     
     ofSoundPlayer* biteSound = nullptr;  // sonido del "bite"
+    ofSoundPlayer* powerUpSound = nullptr; // sonido del "power-up"
     int* scorePtr = nullptr;             // puntero al score global
+    int m_powerUpTimer = 0;
+    int m_powerUpInterval = 1200; // frames between power-ups
 };
 
 
@@ -167,6 +178,10 @@ class AquariumGameScene : public GameScene {
         biteSound.load("sound/Minecraft-Eating.wav");
         biteSound.setMultiPlay(true);
         biteSound.setVolume(2.0f);
+
+        m_powerUpsound.load("sound/1-up.wav");
+        m_powerUpsound.setMultiPlay(true);
+        m_powerUpsound.setVolume(2.0f);
     }
         std::shared_ptr<GameEvent> GetLastEvent(){return m_lastEvent;}
         void SetLastEvent(std::shared_ptr<GameEvent> event){this->m_lastEvent = event;}
@@ -181,9 +196,10 @@ class AquariumGameScene : public GameScene {
         std::shared_ptr<Aquarium> m_aquarium;
         std::shared_ptr<GameEvent> m_lastEvent;
         string m_name;
-        AwaitFrames updateControl{5};
+        AwaitFrames updateControl{2}; // control de frames para update
 
         ofSoundPlayer biteSound;
+        ofSoundPlayer m_powerUpsound;
 };
 
 

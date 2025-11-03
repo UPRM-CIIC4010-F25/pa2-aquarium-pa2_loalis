@@ -6,37 +6,31 @@
 static inline void resolveBounce(std::shared_ptr<Creature> A,
                                  std::shared_ptr<Creature> B)
 {
-    // Centros
     float Ax = A->getX(), Ay = A->getY();
     float Bx = B->getX(), By = B->getY();
-
-    // Radios (usa collisionRadius, que sí existe)
     float rA = A->getCollisionRadius();
     float rB = B->getCollisionRadius();
     float rS = rA + rB;
 
     float dx = Bx - Ax;
     float dy = By - Ay;
-    float d2 = dx*dx + dy*dy;
-    if (d2 >= rS*rS) return;           // no colisión
+    float d2 = dx * dx + dy * dy;
+    if (d2 >= rS * rS) return;
 
     float d = std::sqrt(std::max(d2, 1e-6f));
-    float nx = (d > 1e-6f) ? dx/d : 1.0f;
-    float ny = (d > 1e-6f) ? dy/d : 0.0f;
+    float nx = dx / d;
+    float ny = dy / d;
 
-    // Separación mínima (anti-ghost)
     float pen = rS - d;
     A->moveBy(-nx * 0.5f * pen, -ny * 0.5f * pen);
     B->moveBy( nx * 0.5f * pen,  ny * 0.5f * pen);
 
-    // Aproxima el rebote: nueva dirección contraria a la normal
-    // (usamos setDirection de PlayerCreature / NPCreature)
     if (auto pa = std::dynamic_pointer_cast<PlayerCreature>(A)) pa->setDirection(-nx, -ny);
     if (auto na = std::dynamic_pointer_cast<NPCreature>(A))     na->setDirection(-nx, -ny);
-
-    if (auto pb = std::dynamic_pointer_cast<PlayerCreature>(B)) pb->setDirection( nx,  ny);
-    if (auto nb = std::dynamic_pointer_cast<NPCreature>(B))     nb->setDirection( nx,  ny);
+    if (auto pb = std::dynamic_pointer_cast<PlayerCreature>(B)) pb->setDirection(nx, ny);
+    if (auto nb = std::dynamic_pointer_cast<NPCreature>(B))     nb->setDirection(nx, ny);
 }
+
 
 
 
@@ -256,14 +250,15 @@ void Aquarium::addAquariumLevel(std::shared_ptr<AquariumLevel> level){
 }
 
 void Aquarium::update() {
-    // 1) mover (cada Creature ya hace bounce() interno)
+    // 1) Mover todas las criaturas (cada una hace su propio bounce)
     for (auto& creature : m_creatures) {
         creature->move();
+
+        // 2) Rebote contra los límites del acuario
         float x = creature->getX();
         float y = creature->getY();
         float r = creature->getCollisionRadius();
 
-        // Rebote con los límites
         if (x - r < 0) {
             x = r;
             creature->moveBy(1, 0);
@@ -280,40 +275,42 @@ void Aquarium::update() {
             y = m_height - r;
             creature->moveBy(0, -1);
         }
-        // --- Rebote entre NPCs (evitar ghost) ---
-       for (size_t i = 0; i < m_creatures.size(); ++i) {
-       for (size_t j = i + 1; j < m_creatures.size(); ++j) {
+    }
 
-        auto A = m_creatures[i];
-        auto B = m_creatures[j];
+    // 3) Rebote entre NPCs (sin incluir el jugador)
+    for (size_t i = 0; i < m_creatures.size(); ++i) {
+        for (size_t j = i + 1; j < m_creatures.size(); ++j) {
+            auto A = m_creatures[i];
+            auto B = m_creatures[j];
 
-        // solo NPC vs NPC (no el player)
-        bool AisNPC = (std::dynamic_pointer_cast<NPCreature>(A) != nullptr);
-        bool BisNPC = (std::dynamic_pointer_cast<NPCreature>(B) != nullptr);
-        if (!(AisNPC && BisNPC)) continue;
+            // Solo NPC vs NPC
+            bool AisNPC = (std::dynamic_pointer_cast<NPCreature>(A) != nullptr);
+            bool BisNPC = (std::dynamic_pointer_cast<NPCreature>(B) != nullptr);
+            if (!(AisNPC && BisNPC)) continue;
 
-        // colisionan
-        float dx = B->getX() - A->getX();
-        float dy = B->getY() - A->getY();
-        float r  = A->getCollisionRadius() + B->getCollisionRadius();
-        if (dx*dx + dy*dy <= r*r) {
-            // usa tu helper global
-            resolveBounce(A, B);
+            // Detectar colisión
+            float dx = B->getX() - A->getX();
+            float dy = B->getY() - A->getY();
+            float r = A->getCollisionRadius() + B->getCollisionRadius();
+            if (dx * dx + dy * dy <= r * r) {
+                resolveBounce(A, B);
+            }
         }
     }
-    }
-    
-    // Spawn power-up every 20s
-    m_powerUpTimer++;
-    if (m_powerUpTimer > 1200) { 
-        this->SpawnCreature(AquariumCreatureType::PowerUp);
+
+    // 4) Spawn de PowerUp según intervalo configurado
+    if (++m_powerUpTimer >= m_powerUpInterval) {
+        SpawnCreature(AquariumCreatureType::PowerUp);
         m_powerUpTimer = 0;
         ofLogNotice() << "Power-up spawned!" << std::endl;
+
     }
-    
+
+
+    // 5) Revisar niveles y repoblar si hace falta
     this->Repopulate();
-    }
 }
+
 
 void Aquarium::draw() const {
     for (const auto& creature : m_creatures) {
@@ -365,12 +362,15 @@ void Aquarium::SpawnCreature(AquariumCreatureType type) {
             ));
             break;
         case AquariumCreatureType::PowerUp: {
-            auto powerUp = std::make_shared<NPCreature>(x, y, 1, this->m_sprite_manager->GetSprite(AquariumCreatureType::PowerUp));
+            auto powerUp = std::make_shared<NPCreature>(
+                x, y, 1, m_sprite_manager->GetSprite(AquariumCreatureType::PowerUp)
+            );
             powerUp->SetType(AquariumCreatureType::PowerUp);
-            this->addCreature(powerUp);
-            ofLogNotice() << "Spawned PowerUp at (" << x << ", " << y << ")" << std::endl;
+            addCreature(powerUp);
+            ofLogNotice() << "Power-up spawned at (" << x << ", " << y << ")";
             break;
         }
+
         default:
             ofLogError() << "Unknown creature type to spawn!";
             break;
@@ -456,6 +456,13 @@ if (!updateControl.tick()) {
         if (auto npcB = std::dynamic_pointer_cast<NPCreature>(B)) {
             if (npcB->GetType() == AquariumCreatureType::PowerUp) {
                 ofLogNotice() << "Player collected a power-up! Applying speed boost." << std::endl;
+
+                if (m_powerUpsound.isLoaded()) {
+                    m_powerUpsound.play();
+                } else {
+                    ofLogError("Sound") << "Power-up sound not loaded!" << std::endl;
+                }
+
                 m_player->applySpeedBoost();
                 m_aquarium->removeCreature(B);
                 return;

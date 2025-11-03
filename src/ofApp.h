@@ -43,6 +43,7 @@ class ofApp : public ofBaseApp{
 
 		ofSoundPlayer backgroundMusic;	
 		ofSoundPlayer biteSound;   //  sonido de mordida
+		ofSoundPlayer m_powerUpsound; // sonido de power-up
            int score = 0;    //  puntuación
 		   
 

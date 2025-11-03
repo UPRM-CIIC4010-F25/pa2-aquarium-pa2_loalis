@@ -3,77 +3,75 @@
 //--------------------------------------------------------------
 void ofApp::setup(){
 
-    ofSetFrameRate(60);
+   ofSetFrameRate(60);
     ofSetBackgroundColor(ofColor::blue);
     backgroundImage.load("background.png");
     backgroundImage.resize(ofGetWindowWidth(), ofGetWindowHeight());
 
-
     std::shared_ptr<Aquarium> myAquarium;
     std::shared_ptr<PlayerCreature> player;
 
-    // make the game scene manager 
     gameManager = std::make_unique<GameSceneManager>();
 
-
-    // first we make the intro scene 
+    // Escena de intro
     gameManager->AddScene(std::make_shared<GameIntroScene>(
         GameSceneKindToString(GameSceneKind::GAME_INTRO),
         std::make_shared<GameSprite>("title.png", ofGetWindowWidth(), ofGetWindowHeight())
     ));
 
-    //AquariumSpriteManager
     spriteManager = std::make_shared<AquariumSpriteManager>();
-
-    // Lets setup the aquarium
     myAquarium = std::make_shared<Aquarium>(ofGetWindowWidth(), ofGetWindowHeight(), spriteManager);
-    player = std::make_shared<PlayerCreature>(ofGetWindowWidth()/2 - 50, ofGetWindowHeight()/2 - 50, DEFAULT_SPEED, this->spriteManager->GetSprite(AquariumCreatureType::NPCreature));
-    player->increasePower(1); // start with power 1
-    player->setDirection(0, 0); // Initially stationary
+    player = std::make_shared<PlayerCreature>(ofGetWindowWidth()/2 - 50, ofGetWindowHeight()/2 - 50,
+                                              DEFAULT_SPEED, this->spriteManager->GetSprite(AquariumCreatureType::NPCreature));
+    player->increasePower(1);
+    player->setDirection(0, 0);
     player->setBounds(ofGetWindowWidth() - 20, ofGetWindowHeight() - 20);
 
-
+    // Niveles
     myAquarium->addAquariumLevel(std::make_shared<Level_0>(0, 10));
     myAquarium->addAquariumLevel(std::make_shared<Level_1>(1, 15));
     myAquarium->addAquariumLevel(std::make_shared<Level_2>(2, 20));
-    myAquarium->Repopulate(); // initial population
-    myAquarium->setBiteSound(&biteSound); // connect bite sound
+    myAquarium->Repopulate();
 
+    // cargamos sonidos 
+    backgroundMusic.load("sound/Yoshi_theme.wav");
+    backgroundMusic.setLoop(true);
+    backgroundMusic.setVolume(0.6f);
+    backgroundMusic.play();
 
-    // now that we are mostly set, lets pass the player and the aquarium downstream
+    bool soundLoaded = biteSound.load("sound/Minecraft-Eating.wav");
+    if (soundLoaded) {
+        biteSound.setVolume(1.0f);
+        biteSound.setMultiPlay(true);
+    }
+    bool powerUpSoundLoaded = m_powerUpsound.load("sound/1-up.wav");
+    if (powerUpSoundLoaded) {
+        m_powerUpsound.setVolume(1.0f);
+        m_powerUpsound.setMultiPlay(true);
+    }
+
+    
+    myAquarium->setBiteSound(&biteSound); 
+    myAquarium->setPowerUpSound(&m_powerUpsound);
+    myAquarium->setScorePtr(&score);
+
+    // Escena principal con el acuario y el jugador
     gameManager->AddScene(std::make_shared<AquariumGameScene>(
         std::move(player), std::move(myAquarium), GameSceneKindToString(GameSceneKind::AQUARIUM_GAME)
-    )); // player and aquarium are owned by the scene moving forward
+    ));
 
-    // Load font for game over message
+    // Escena de Game Over
     gameOverTitle.load("Verdana.ttf", 12, true, true);
     gameOverTitle.setLineHeight(34.0f);
     gameOverTitle.setLetterSpacing(1.035);
-
-
     gameManager->AddScene(std::make_shared<GameOverScene>(
         GameSceneKindToString(GameSceneKind::GAME_OVER),
         std::make_shared<GameSprite>("game-over.png", ofGetWindowWidth(), ofGetWindowHeight())
     ));
 
-    ofSetLogLevel(OF_LOG_NOTICE); // Set default log level
-
-
-    backgroundMusic.load("sound/Yoshi_theme.wav");
-    backgroundMusic.setLoop(true);
-    backgroundMusic.setVolume(0.6f);
-    backgroundMusic.play(); 
-
-    // Load bite sound
-    bool soundLoaded = biteSound.load("sound/Minecraft-Eating.wav");
-    if (soundLoaded) {
-        biteSound.setVolume(1.0f);
-        biteSound.setMultiPlay(true); 
-    }
-
-    
-
+    ofSetLogLevel(OF_LOG_NOTICE);
 }
+
 
 //--------------------------------------------------------------
 void ofApp::update(){
