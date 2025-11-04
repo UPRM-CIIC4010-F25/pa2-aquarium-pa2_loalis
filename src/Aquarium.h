@@ -162,7 +162,7 @@ private:
     ofSoundPlayer* powerUpSound = nullptr; // sonido del "power-up"
     int* scorePtr = nullptr;             // puntero al score global
     int m_powerUpTimer = 0;
-    int m_powerUpInterval = 1200; // frames between power-ups
+    int m_powerUpInterval = 780; // frames between power-ups
 };
 
 
@@ -179,7 +179,7 @@ class AquariumGameScene : public GameScene {
         biteSound.setMultiPlay(true);
         biteSound.setVolume(2.0f);
 
-        m_powerUpsound.load("sound/1-up.wav");
+        m_powerUpsound.load("sound/Super-Mario-Bros.wav");
         m_powerUpsound.setMultiPlay(true);
         m_powerUpsound.setVolume(2.0f);
     }

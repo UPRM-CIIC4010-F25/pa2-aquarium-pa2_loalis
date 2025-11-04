@@ -488,8 +488,8 @@ if (!updateControl.tick()) {
                 ofLogError("Sound") << "Bite sound not loaded!" << std::endl;
             }
             
-            // subir poder más lento (opcional: 50 en vez de 25)
-            if (m_player->getScore() % 50 == 0) {
+            const int kPowerEvery = 15;
+            if (m_player->getScore() > 0 && m_player->getScore() % kPowerEvery == 0) {
                 m_player->increasePower(1);
                 ofLogNotice() << "Player power increased to " << m_player->getPower() << "!";
             }

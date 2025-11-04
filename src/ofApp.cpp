@@ -44,7 +44,7 @@ void ofApp::setup(){
         biteSound.setVolume(1.0f);
         biteSound.setMultiPlay(true);
     }
-    bool powerUpSoundLoaded = m_powerUpsound.load("sound/1-up.wav");
+    bool powerUpSoundLoaded = m_powerUpsound.load("sound/Super-Marios-Bros.wav");
     if (powerUpSoundLoaded) {
         m_powerUpsound.setVolume(1.0f);
         m_powerUpsound.setMultiPlay(true);
@@ -106,8 +106,7 @@ void ofApp::draw(){
     backgroundImage.draw(0, 0);
     gameManager->DrawActiveScene();
     
-    ofSetColor(255);
-    ofDrawBitmapString("Score: " + ofToString(score), 15, 20);
+   
    
 
 
