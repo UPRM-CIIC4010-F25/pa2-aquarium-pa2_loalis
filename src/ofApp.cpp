@@ -145,6 +145,54 @@ void ofApp::keyPressed(int key){
                     biteSound.play();
                 }
                 break;
+                        // ---- WASD ----
+            case 'w': case 'W':
+                gameScene->GetPlayer()->setDirection(
+                    gameScene->GetPlayer()->isXDirectionActive() ? gameScene->GetPlayer()->getDx() : 0,
+                    -1
+                );
+                break;
+
+            case 's': case 'S':
+                gameScene->GetPlayer()->setDirection(
+                    gameScene->GetPlayer()->isXDirectionActive() ? gameScene->GetPlayer()->getDx() : 0,
+                    1
+                );
+                break;
+
+            case 'a': case 'A':
+                gameScene->GetPlayer()->setDirection(
+                    -1,
+                    gameScene->GetPlayer()->isYDirectionActive() ? gameScene->GetPlayer()->getDy() : 0
+                );
+                gameScene->GetPlayer()->setFlipped(true);
+                break;
+
+            case 'd': case 'D':
+                gameScene->GetPlayer()->setDirection(
+                    1,
+                    gameScene->GetPlayer()->isYDirectionActive() ? gameScene->GetPlayer()->getDy() : 0
+                );
+                gameScene->GetPlayer()->setFlipped(false);
+                break;
+
+            // ---- M para mutear/desmutear ----
+            case 'm': case 'M': {
+                static bool muted = false;
+                muted = !muted;
+
+                float bgVol = muted ? 0.0f : 0.6f;   // música
+                float sfxVol = muted ? 0.0f : 1.0f;  // efectos
+                float pwrVol = muted ? 0.0f : 1.0f;  // power-up
+
+                backgroundMusic.setVolume(bgVol);
+                biteSound.setVolume(sfxVol);
+                m_powerUpsound.setVolume(pwrVol);
+
+                ofLogNotice() << (muted ? "Sound muted" : "Sound on");
+                break;
+            }
+    
             default:
                 break;
         }
@@ -188,6 +236,25 @@ void ofApp::keyReleased(int key){
         gameScene->GetPlayer()->move();
         return;
     }
+        // ---- WASD released ----
+    if (key == 'w' || key == 'W' || key == 's' || key == 'S') {
+        gameScene->GetPlayer()->setDirection(
+            gameScene->GetPlayer()->isXDirectionActive() ? gameScene->GetPlayer()->getDx() : 0,
+            0
+        );
+        gameScene->GetPlayer()->move();
+        return;
+    }
+
+    if (key == 'a' || key == 'A' || key == 'd' || key == 'D') {
+        gameScene->GetPlayer()->setDirection(
+            0,
+            gameScene->GetPlayer()->isYDirectionActive() ? gameScene->GetPlayer()->getDy() : 0
+        );
+        gameScene->GetPlayer()->move();
+        return;
+    }
+
 
     }
 }

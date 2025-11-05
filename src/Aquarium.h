@@ -222,6 +222,9 @@ class AquariumGameScene : public GameScene {
         string m_name;
         AwaitFrames updateControl{2}; // control de frames para update
 
+       
+
+
         ofSoundPlayer biteSound;
         ofSoundPlayer m_powerUpsound;
 };
