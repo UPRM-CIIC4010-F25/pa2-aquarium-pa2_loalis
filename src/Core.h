@@ -35,10 +35,15 @@ public:
     }
 
     void draw(float x, float y) const {
+        float halfWidth = m_image.getWidth() / 2.0f;
+        float halfHeight = m_image.getHeight() / 2.0f;
+        
         if (m_flipped) {
-            m_flippedImage.draw(x, y);
+            // Draw centered at (x, y)
+            m_flippedImage.draw(x - halfWidth, y - halfHeight);
         } else {
-            m_image.draw(x, y);
+            // Draw centered at (x, y)
+            m_image.draw(x - halfWidth, y - halfHeight);
         }
     }
 
