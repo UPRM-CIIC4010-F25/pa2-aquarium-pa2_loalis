@@ -38,7 +38,7 @@ class AquariumLevel : public GameLevel {
         bool isCompleted() override;
         void populationReset();
         void levelReset(){m_level_score=0;this->populationReset();}
-        virtual std::vector<AquariumCreatureType> Repopulate() = 0;
+        virtual std::vector<AquariumCreatureType> Repopulate();
     protected:
         std::vector<std::shared_ptr<AquariumLevelPopulationNode>> m_levelPopulation;
         int m_level_score;
@@ -186,7 +186,7 @@ private:
     ofSoundPlayer* powerUpSound = nullptr; // sonido del "power-up"
     int* scorePtr = nullptr;             // puntero al score global
     int m_powerUpTimer = 0;
-    int m_powerUpInterval = 780; // frames between power-ups
+    int m_powerUpInterval = 300; // frames between power-ups
 };
 
 
@@ -236,7 +236,6 @@ class Level_0 : public AquariumLevel  {
             this->m_levelPopulation.push_back(std::make_shared<AquariumLevelPopulationNode>(AquariumCreatureType::NPCreature, 10));
 
         };
-        std::vector<AquariumCreatureType> Repopulate() override;
 
 };
 class Level_1 : public AquariumLevel  {
@@ -246,7 +245,6 @@ class Level_1 : public AquariumLevel  {
             this->m_levelPopulation.push_back(std::make_shared<AquariumLevelPopulationNode>(AquariumCreatureType::JellyFish, 3));
 
         };
-        std::vector<AquariumCreatureType> Repopulate() override;
 
 
 };
@@ -258,6 +256,5 @@ class Level_2 : public AquariumLevel  {
             this->m_levelPopulation.push_back(std::make_shared<AquariumLevelPopulationNode>(AquariumCreatureType::JellyFish, 5));
             this->m_levelPopulation.push_back(std::make_shared<AquariumLevelPopulationNode>(AquariumCreatureType::PufferFish, 2));
         };
-        std::vector<AquariumCreatureType> Repopulate() override;
 
 };
