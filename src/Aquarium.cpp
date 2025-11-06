@@ -669,7 +669,7 @@ std::vector<AquariumCreatureType> AquariumLevel::Repopulate() {
     for (const auto& node : m_levelPopulation) {
         int delta = node->population - node->currentPopulation;
 
-        if (delta > 0) {
+        if (delta > 1) {
             toRepopulate.insert(toRepopulate.end(), delta, node->creatureType);
             node->currentPopulation += delta;
         }

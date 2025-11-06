@@ -166,7 +166,7 @@ void GameIntroScene::Update(){
 }
 
 void GameIntroScene::Draw(){
-    this->m_banner->draw(0,0);
+    this->m_banner->draw(500,350);
 }
 
 void GameOverScene::Update(){
@@ -175,6 +175,6 @@ void GameOverScene::Update(){
 
 void GameOverScene::Draw(){
     ofBackgroundGradient(ofColor::red, ofColor::black);
-    this->m_banner->draw(0,0);
+    this->m_banner->draw(500,350);
 
 }
