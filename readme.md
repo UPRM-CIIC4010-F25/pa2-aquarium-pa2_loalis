@@ -21,13 +21,8 @@ Submitting Assignment
 To submit this assignment, create a Release with the branch that holds all the changes you have added. If no Release is made, the last commit to the master branch will be graded. Don't forget that you must also fill out an evaluation form in Moodle to consider the project submitted.
 Grading
 
-## Team Info
-| Student Number | Student Name | Student Email |
-|-|-|-|
-
-Letizia M. Mayor Pena 802238798 letizia.mayor@upr.edu 
+Student Info 
 |(802237534)| (Loalis M. Feliciano Medina)| (loalis.feliciano@upr.edu) |
-|(STUDENT NUMBER HERE)| (STUDENT NAME HERE)| (STUDENT EMAIL HERE) |
 
 ---
 
@@ -87,17 +82,13 @@ Verified transitions between levels and automatic respawning of creatures.
 
 Bonus Features
 
-Added soun for eating fish.
+Added sound for eating fish.
 
 Added dual player movement (WASD + arrow keys).
 
 Implemented key “M” to mute/unmute global sound.
 
-Repositioned the title screen text to the top-left corner.
 
-Increased Power-Up spawn rate to make them appear faster.
-
-Performed full testing for collisions, power-ups, repopulation, and sound to ensure smooth gameplay.
 
 
 
